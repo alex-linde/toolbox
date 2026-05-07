@@ -3,9 +3,6 @@
     "version": "6.0",
     "date": "2026-05-07",
     "changes": [
-      "New: Token Defluffer — paste any text to count tokens and get a shorter AI rewrite",
-      "Font Inspector now identifies fonts from screenshots",
-      "AI tools rate-limited to stay free for everyone",
       "Home page: search-first layout, cleaner copy",
       "All tools now listed in the sidebar"
     ]
