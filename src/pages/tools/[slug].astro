@@ -27,7 +27,6 @@ export function getStaticPaths() {
     'code-minifier',
     'scss-compiler',
     'semantic-html',
-    'token-defluffer',
   ]);
   return tools
     .filter((t) => !implemented.has(t.slug))

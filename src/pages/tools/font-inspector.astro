@@ -23,10 +23,7 @@ const faq = [
   description="Identify fonts from screenshots using AI vision. Upload an image containing text and get font name, category and Google Fonts links."
   alpine={false}
 >
-  <Fragment slot="head">
-    <!-- Turnstile: replace SITE_KEY with yours from dash.cloudflare.com → Turnstile -->
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad&render=explicit" async></script>
-  </Fragment>
+
   <div class="px-8 py-10 lg:px-14">
 
     <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -149,7 +146,7 @@ const faq = [
 
   function initTurnstile() {
     const ts = (window as any).turnstile;
-    if (!ts || tsWidgetId) return;
+    if (!ts || tsWidgetId || !document.getElementById('ts-widget')) return;
     tsWidgetId = ts.render('#ts-widget', {
       sitekey: TURNSTILE_SITE_KEY,
       appearance: 'interaction-only',
@@ -172,8 +169,30 @@ const faq = [
     });
   }
 
-  if ((window as any).turnstile) initTurnstile();
-  else (window as any).onTurnstileLoad = initTurnstile;
+  // Load the Turnstile script once via a DOM guard so that View Transitions
+  // navigating away and back never causes a double-load warning.
+  function loadTurnstile() {
+    if ((window as any).turnstile) { initTurnstile(); return; }
+    (window as any).onTurnstileLoad = initTurnstile;
+    if (!document.querySelector('script[src*="challenges.cloudflare.com/turnstile"]')) {
+      const s = Object.assign(document.createElement('script'), {
+        src: 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad&render=explicit',
+        async: true,
+      });
+      document.head.appendChild(s);
+    }
+  }
+
+  // View Transitions swap the DOM but keep module scope, so the widget element
+  // is replaced while tsWidgetId still holds the old stale ID. Clean up before
+  // the swap and re-init after so the ID always matches what's in the DOM.
+  document.addEventListener('astro:before-swap', () => {
+    const ts = (window as any).turnstile;
+    if (ts && tsWidgetId) { try { ts.remove(tsWidgetId); } catch {} }
+    tsWidgetId = null;
+  });
+  document.addEventListener('astro:page-load', loadTurnstile);
+  loadTurnstile();
   // ────────────────────────────────────────────────────────────────────────────
 
   let _b64: string | null = null;

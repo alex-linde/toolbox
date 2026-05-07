@@ -185,15 +185,6 @@ export const tools: Tool[] = [
     tags: ['XD', 'Figma', 'SVG', 'reorder', 'export', 'migration'],
     icon: 'XD',
   },
-  {
-    slug: 'token-defluffer',
-    title: 'AI Token Defluffer',
-    shortTitle: 'Token Defluffer',
-    description: 'Count approximate tokens in any text and rewrite it to be maximally clear and concise for LLMs.',
-    category: 'code',
-    tags: ['tokens', 'LLM', 'AI', 'optimise', 'rewrite', 'prompt engineering'],
-    icon: 'AI',
-  },
 ];
 
 export const toolsByCategory = (cat: Category) => tools.filter((t) => t.category === cat);
