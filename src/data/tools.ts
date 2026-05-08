@@ -130,6 +130,15 @@ export const tools: Tool[] = [
     tags: ['tints', 'shades', 'design tokens', 'CSS variables', 'palette'],
     icon: '◑',
   },
+  {
+    slug: 'color-extractor',
+    title: 'Image Dominant Color Extractor',
+    shortTitle: 'Color Extractor',
+    description: 'Extract dominant colors from any image as HEX, RGB, or HSL. Export as CSS variables, JSON, or Tailwind config.',
+    category: 'typography',
+    tags: ['dominant color', 'image palette', 'color picker', 'median cut', 'CSS variables', 'design tokens'],
+    icon: 'CLR',
+  },
   // ── Code & Web ────────────────────────────────────────────────────────────
   {
     slug: 'code-formatter',

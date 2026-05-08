@@ -1,5 +1,12 @@
 [
   {
+    "version": "6.3",
+    "date": "2026-05-08",
+    "changes": [
+      "New tool: Image Dominant Color Extractor — extract dominant colors from any image using median cut; copy swatches as HEX/RGB/HSL, export as CSS variables or JSON"
+    ]
+  },
+  {
     "version": "6.2",
     "date": "2026-05-08",
     "changes": [
