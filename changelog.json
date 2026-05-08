@@ -1,5 +1,19 @@
 [
   {
+    "version": "6.2",
+    "date": "2026-05-08",
+    "changes": [
+      "ICO Favicon Generator: added Apple Touch Icon (180×180), PWA icons (192×192 + 512×512) with manifest.json, SVG favicon with dark mode via CSS prefers-color-scheme, optional dark variant image upload, Modern/All size presets, and a copyable HTML head snippet"
+    ]
+  },
+  {
+    "version": "6.1",
+    "date": "2026-05-08",
+    "changes": [
+      "ICO Favicon Generator: download is now a ZIP containing favicon.ico plus a separate PNG for every selected size"
+    ]
+  },
+  {
     "version": "6.0",
     "date": "2026-05-07",
     "changes": [

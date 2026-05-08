@@ -142,7 +142,7 @@ const faq = [
 
   function initTurnstile() {
     const ts = (window as any).turnstile;
-    if (!ts || tsWidgetId || !document.getElementById('ts-widget')) return;
+    if (!ts || tsWidgetId) return;
     tsWidgetId = ts.render('#ts-widget', {
       sitekey: TURNSTILE_SITE_KEY,
       appearance: 'interaction-only',

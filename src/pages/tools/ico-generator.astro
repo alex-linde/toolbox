@@ -5,30 +5,32 @@ import QuickTips from '@/components/QuickTips.astro';
 import FAQAccordion from '@/components/FAQAccordion.astro';
 
 const tips = [
-  { heading: '16 × 16',  body: 'Minimum size — used in browser tabs and small list views.' },
-  { heading: '32 × 32',  body: 'Standard taskbar and desktop icon on Windows.' },
-  { heading: '48 × 48',  body: 'Large Windows desktop icon; macOS Dock at 1×.' },
-  { heading: '256 × 256', body: 'Crisp at HiDPI / Retina. Stored as PNG inside the .ico container.' },
+  { heading: '16 × 16',   body: 'Browser tab and small list views.' },
+  { heading: '32 × 32',   body: 'Standard taskbar icon; recommended ICO base.' },
+  { heading: '180 × 180', body: 'Apple Touch Icon — iOS/iPadOS home screen bookmarks.' },
+  { heading: '192 × 192', body: 'Android/Chrome home screen shortcut.' },
+  { heading: '512 × 512', body: 'PWA splash screen; high-DPI Android icons.' },
 ];
 
 const cheatSheet = [
-  { label: 'Web',     value: '16, 32 (+ 48 optional)' },
-  { label: 'Windows', value: '16, 32, 48, 256' },
-  { label: 'macOS',   value: '16, 32, 128, 256' },
-  { label: 'All',     value: '16, 32, 48, 64, 128, 256' },
+  { label: 'Modern min.', value: 'ICO (32) + SVG + 180 + 192 + 512' },
+  { label: 'Windows',     value: '16, 32, 48, 256' },
+  { label: 'Apple',       value: '57, 76, 120, 152, 167, 180' },
+  { label: 'PWA',         value: '192, 512 + manifest.json' },
 ];
 
 const faq = [
-  { question: 'Is my image uploaded?', answer: 'No. The ICO is built entirely in your browser using Canvas and binary ArrayBuffer writes. Nothing is sent to a server.' },
-  { question: 'What image formats are accepted?', answer: 'PNG, JPEG and WebP. Square images work best — non-square images are scaled to fit each target size.' },
-  { question: 'How is the .ico file structured?', answer: 'Each size is encoded as a PNG payload inside the ICO container — modern browsers and Windows 7+ read this format correctly.' },
-  { question: 'Can I add custom sizes?', answer: 'Yes — type any value from 1 to 512 in the custom size box and press Enter or click Add.' },
+  { question: 'Is my image uploaded?', answer: 'No. Canvas rendering, ICO packing, and ZIP assembly all run entirely in your browser. Nothing is sent to a server.' },
+  { question: 'What image formats are accepted?', answer: 'PNG, JPEG, and WebP. Square images work best — non-square inputs are scaled to fit each target size.' },
+  { question: 'What does the ZIP contain?', answer: 'A favicon.ico (multi-size), individual PNGs for each selected size, a favicon.svg (with dark/light CSS media query if a dark variant is uploaded), apple-touch-icon.png (180×180) and PWA icons + manifest.json if checked, and a head-snippet.html with ready-to-paste <link> tags.' },
+  { question: 'How does dark mode work?', answer: 'Upload a dark-mode variant image. The tool embeds both images in a favicon.svg using a CSS prefers-color-scheme media query. Supported in Chrome 93+, Firefox 81+, and Safari 15.4+.' },
+  { question: 'Can I add custom sizes?', answer: 'Yes — type any size from 1 to 512 in the custom size box and press Enter or click Add.' },
 ];
 ---
 
 <MainLayout
   title="ICO Favicon Generator — Free In-Browser Tool | Toolbox"
-  description="Generate multi-size .ico favicon files in your browser. 16, 32, 48, 64, 128, 256 px. Custom sizes supported. No uploads."
+  description="Download a complete favicon package — multi-size .ico, SVG with dark mode, Apple touch icon, PWA icons, HTML snippet. No uploads."
   alpine={false}
 >
   <div class="px-8 py-10 lg:px-14">
@@ -37,7 +39,7 @@ const faq = [
       <div>
         <Breadcrumbs tool="ICO Favicon Generator" category="Images & Documents" />
         <h1 class="mt-3 text-2xl font-semibold tracking-tight text-slate-900">ICO Favicon Generator</h1>
-        <p class="mt-1 text-sm text-slate-500">Pack multiple sizes into a single .ico file.</p>
+        <p class="mt-1 text-sm text-slate-500">Generate a complete favicon package — ICO, SVG, Apple touch, PWA icons + HTML snippet.</p>
       </div>
       <button id="helpfulBtn"
         class="flex shrink-0 items-center gap-2 self-start rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-500 shadow-sm transition-all hover:border-purple-200 hover:text-purple-600"
@@ -68,23 +70,31 @@ const faq = [
           <!-- Preview row -->
           <div id="icoPreviewRow" class="mb-6 hidden flex-wrap items-end gap-4"></div>
 
-          <!-- Sizes -->
+          <!-- Controls -->
           <div id="icoControls" class="hidden flex-col gap-5">
 
+            <!-- Sizes -->
             <div>
-              <p class="mb-2 text-xs font-medium text-slate-600">Sizes to include</p>
+              <div class="mb-2 flex items-center justify-between">
+                <p class="text-xs font-medium text-slate-600">ICO + PNG sizes</p>
+                <div class="flex gap-2">
+                  <button id="presetModern" class="rounded border border-purple-200 px-2 py-0.5 text-xs text-purple-600 hover:bg-purple-50">Modern</button>
+                  <button id="presetAll"    class="rounded border border-slate-200  px-2 py-0.5 text-xs text-slate-500  hover:bg-slate-50">All</button>
+                </div>
+              </div>
               <div class="flex flex-wrap gap-3">
                 {[16, 32, 48, 64, 128, 256].map(sz => (
                   <label class="ico-cb flex cursor-pointer items-center gap-2 rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-600 transition-colors hover:border-purple-300">
-                    <input type="checkbox" class="accent-purple-500" value={sz} checked={[16,32,48,256].includes(sz)} />
+                    <input type="checkbox" class="accent-purple-500" value={sz} checked={[16, 32, 48, 256].includes(sz)} />
                     {sz}px
                   </label>
                 ))}
               </div>
             </div>
 
+            <!-- Custom size -->
             <div class="flex items-center gap-2">
-              <label class="text-xs font-medium text-slate-600 shrink-0">Custom size (1–512)</label>
+              <label class="shrink-0 text-xs font-medium text-slate-600">Custom size (1–512)</label>
               <input id="icoCustomInput" type="number" min="1" max="512" placeholder="e.g. 96"
                 class="w-28 rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm text-slate-900 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-100" />
               <button id="icoAddBtn"
@@ -92,8 +102,53 @@ const faq = [
                 Add
               </button>
             </div>
-
             <div id="customSizesList" class="flex flex-wrap gap-2"></div>
+
+            <!-- Additional exports -->
+            <div class="rounded-md border border-slate-100 bg-slate-50 p-4">
+              <p class="mb-3 text-xs font-medium text-slate-600">Additional exports</p>
+              <div class="flex flex-col gap-2.5">
+                <label class="flex cursor-pointer items-start gap-2.5">
+                  <input id="optApple" type="checkbox" class="mt-0.5 accent-purple-500" checked />
+                  <div>
+                    <span class="text-sm text-slate-700">Apple Touch Icon</span>
+                    <span class="ml-1.5 text-xs text-slate-400">apple-touch-icon.png (180×180)</span>
+                  </div>
+                </label>
+                <label class="flex cursor-pointer items-start gap-2.5">
+                  <input id="optPWA" type="checkbox" class="mt-0.5 accent-purple-500" checked />
+                  <div>
+                    <span class="text-sm text-slate-700">PWA Icons + manifest.json</span>
+                    <span class="ml-1.5 text-xs text-slate-400">favicon-192x192.png + favicon-512x512.png</span>
+                  </div>
+                </label>
+                <label class="flex cursor-pointer items-start gap-2.5">
+                  <input id="optSVG" type="checkbox" class="mt-0.5 accent-purple-500" checked />
+                  <div>
+                    <span class="text-sm text-slate-700">SVG Favicon</span>
+                    <span class="ml-1.5 text-xs text-slate-400">favicon.svg — supports dark mode via CSS media query</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Dark mode upload -->
+            <div>
+              <p class="mb-2 text-xs font-medium text-slate-600">
+                Dark mode variant
+                <span class="ml-1 font-normal text-slate-400">(optional — embedded in favicon.svg)</span>
+              </p>
+              <div id="icoDarkZone"
+                class="flex cursor-pointer items-center gap-3 rounded-md border border-dashed border-slate-200 bg-slate-50 px-4 py-3 transition-colors hover:border-purple-300 hover:bg-purple-50/20"
+                role="button" tabindex="0"
+              >
+                <span class="text-lg leading-none text-slate-300">◐</span>
+                <span id="icoDarkZoneText" class="flex-1 text-xs text-slate-500">Drop dark variant or click to browse</span>
+                <canvas id="icoDarkPreview" width="24" height="24" class="hidden rounded" style="width:24px;height:24px;image-rendering:pixelated;border:1px solid #e2e8f0"></canvas>
+                <button id="icoDarkClear" class="hidden text-xs text-slate-400 hover:text-rose-500">✕</button>
+                <input id="icoDarkInput" type="file" class="sr-only" accept="image/png,image/jpeg,image/webp" />
+              </div>
+            </div>
 
             <!-- Progress -->
             <div id="icoPBar" class="hidden h-1.5 overflow-hidden rounded-full bg-slate-100">
@@ -104,10 +159,19 @@ const faq = [
               class="w-full rounded-md bg-gradient-to-br from-indigo-500 to-purple-500 px-6 py-3 text-sm font-semibold text-white transition-opacity disabled:opacity-50"
               disabled
             >
-              Generate & Download .ico
+              Generate & Download .zip
             </button>
 
             <p id="icoStatus" class="hidden text-center text-sm"></p>
+
+            <!-- HTML snippet -->
+            <div id="htmlSnippetSection" class="hidden overflow-hidden rounded-md border border-slate-700 bg-slate-900">
+              <div class="flex items-center justify-between border-b border-slate-700/60 px-4 py-2">
+                <p class="text-xs font-medium text-slate-300">Paste into &lt;head&gt;</p>
+                <button id="copySnippetBtn" class="text-xs text-purple-400 transition-colors hover:text-purple-300">Copy</button>
+              </div>
+              <pre id="htmlSnippetCode" class="overflow-x-auto p-4 text-xs leading-relaxed text-slate-100"></pre>
+            </div>
 
           </div>
 
@@ -127,12 +191,12 @@ const faq = [
       <div class="mx-auto max-w-2xl">
         <h2 class="mb-4 text-lg font-semibold text-slate-900">About ICO Favicon Generator</h2>
         <p class="mb-8 text-sm leading-relaxed text-slate-600">
-          A .ico file is a container that holds multiple icon sizes in a single file. Browsers pick the best-fit size for the context — the tab, the taskbar, the bookmark list. This tool encodes each selected size as a lossless PNG payload inside the ICO container, which works correctly in all modern browsers and Windows 7+.
+          Generate a complete favicon package in one click. The ZIP includes a <code class="font-mono text-xs">favicon.ico</code> (multi-size PNG payloads — works in all browsers and Windows 7+), a scalable <code class="font-mono text-xs">favicon.svg</code> with optional dark/light CSS media query, an <code class="font-mono text-xs">apple-touch-icon.png</code> (180×180 for iOS), PWA icons (192×192 + 512×512) with <code class="font-mono text-xs">manifest.json</code>, and a <code class="font-mono text-xs">head-snippet.html</code> with ready-to-paste <code class="font-mono text-xs">&lt;link&gt;</code> tags. Everything runs in your browser — no uploads.
         </p>
         <FAQAccordion items={faq} />
         <div class="mt-10 text-xs leading-relaxed text-slate-400">
           <p>Related: <a href="/tools/image-compress" class="text-purple-500 hover:underline">Image Compressor</a> · <a href="/tools/image-convert" class="text-purple-500 hover:underline">Image Converter</a> · <a href="/tools/image-resize" class="text-purple-500 hover:underline">Image Resizer</a></p>
-          <p class="mt-2">Keywords: ico generator, favicon creator, multi-size ico, browser favicon tool, no upload favicon, .ico file maker</p>
+          <p class="mt-2">Keywords: ico generator, favicon creator, multi-size ico, favicon zip download, apple touch icon, pwa icons, manifest.json, dark mode favicon, svg favicon, no upload favicon</p>
         </div>
       </div>
     </div>
@@ -141,8 +205,11 @@ const faq = [
 </MainLayout>
 
 <script>
+  import JSZip from 'jszip';
+
   /* ── State ── */
   let icoImg: HTMLImageElement | null = null;
+  let darkImg: HTMLImageElement | null = null;
   const customIcoSizes = new Set<number>();
   let helpfulCount = 0;
 
@@ -165,14 +232,57 @@ const faq = [
   }
 
   function setProgress(pct: number) {
-    const bar = document.getElementById('icoPBar')!;
+    const bar  = document.getElementById('icoPBar')!;
     const fill = document.getElementById('icoPFill')!;
     if (pct > 0) { bar.classList.remove('hidden'); fill.style.width = pct + '%'; }
     else { bar.classList.add('hidden'); fill.style.width = '0%'; }
   }
 
-  /* ── Drop zone ── */
-  const zone = document.getElementById('icoDropZone')!;
+  /* ── Canvas utilities ── */
+  function renderToCanvas(img: HTMLImageElement, sz: number): HTMLCanvasElement {
+    const c = document.createElement('canvas');
+    c.width = sz; c.height = sz;
+    const ctx = c.getContext('2d')!;
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(img, 0, 0, sz, sz);
+    return c;
+  }
+
+  function canvasToUint8(c: HTMLCanvasElement): Uint8Array {
+    const b64 = c.toDataURL('image/png').split(',')[1];
+    const bin = atob(b64);
+    const arr = new Uint8Array(bin.length);
+    for (let j = 0; j < bin.length; j++) arr[j] = bin.charCodeAt(j);
+    return arr;
+  }
+
+  /* ── SVG generation (embeds 32px PNGs; dark uses CSS media query) ── */
+  function generateFaviconSVG(light: HTMLImageElement, dark: HTMLImageElement | null): string {
+    const lDataURL = renderToCanvas(light, 32).toDataURL('image/png');
+    if (!dark) {
+      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32"><image href="${lDataURL}" width="32" height="32"/></svg>`;
+    }
+    const dDataURL = renderToCanvas(dark, 32).toDataURL('image/png');
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+<style>.d{display:none}@media(prefers-color-scheme:dark){.l{display:none}.d{display:block}}</style>
+<image class="l" href="${lDataURL}" width="32" height="32"/>
+<image class="d" href="${dDataURL}" width="32" height="32"/>
+</svg>`;
+  }
+
+  /* ── HTML snippet ── */
+  function generateHTMLSnippet(opts: { svg: boolean; apple: boolean; pwa: boolean }): string {
+    const lines = ['<!-- Favicon — generated by lindetoolbox.com -->'];
+    lines.push('<link rel="icon" href="/favicon.ico" sizes="any">');
+    if (opts.svg)   lines.push('<link rel="icon" href="/favicon.svg" type="image/svg+xml">');
+    if (opts.apple) lines.push('<link rel="apple-touch-icon" href="/apple-touch-icon.png">');
+    if (opts.pwa)   lines.push('<link rel="manifest" href="/manifest.json">');
+    return lines.join('\n');
+  }
+
+  /* ── Main drop zone ── */
+  const zone  = document.getElementById('icoDropZone')!;
   const input = document.getElementById('icoFileInput') as HTMLInputElement;
 
   zone.addEventListener('click', () => input.click());
@@ -191,7 +301,6 @@ const faq = [
     const infoEl = document.getElementById('icoFileInfo')!;
     infoEl.textContent = `${file.name} · ${fmtBytes(file.size)}`;
     infoEl.classList.remove('hidden');
-
     const reader = new FileReader();
     reader.onload = (ev) => {
       const img = new Image();
@@ -200,9 +309,10 @@ const faq = [
         document.getElementById('icoConvertBtn')!.removeAttribute('disabled');
         renderPreview(img);
         document.getElementById('icoPreviewRow')!.classList.remove('hidden');
-        document.getElementById('icoControls')!.classList.remove('hidden');
-        document.getElementById('icoControls')!.style.display = 'flex';
-        showStatus(`Loaded ${img.naturalWidth}×${img.naturalHeight} px — choose sizes and generate.`, 'info');
+        const controls = document.getElementById('icoControls')!;
+        controls.classList.remove('hidden');
+        controls.style.display = 'flex';
+        showStatus(`Loaded ${img.naturalWidth}×${img.naturalHeight}px — choose options and generate.`, 'info');
       };
       img.src = ev.target!.result as string;
     };
@@ -215,25 +325,65 @@ const faq = [
     [16, 32, 48, 64].forEach(sz => {
       const wrap = document.createElement('div');
       wrap.className = 'flex flex-col items-center gap-1';
-
       const lbl = document.createElement('span');
       lbl.className = 'font-mono text-[0.6rem] text-slate-400';
       lbl.textContent = sz + 'px';
-
       const dSz = Math.max(sz, 16);
       const bg = document.createElement('div');
       bg.style.cssText = `width:${dSz}px;height:${dSz}px;display:flex;align-items:center;justify-content:center;`;
-
       const c = document.createElement('canvas');
       c.width = sz; c.height = sz;
       c.style.cssText = `width:${dSz}px;height:${dSz}px;image-rendering:pixelated;`;
       c.getContext('2d')!.drawImage(img, 0, 0, sz, sz);
-
       bg.appendChild(c);
       wrap.appendChild(lbl);
       wrap.appendChild(bg);
       row.appendChild(wrap);
     });
+  }
+
+  /* ── Dark mode drop zone ── */
+  const darkZone     = document.getElementById('icoDarkZone')!;
+  const darkInput    = document.getElementById('icoDarkInput') as HTMLInputElement;
+  const darkClearBtn = document.getElementById('icoDarkClear')!;
+
+  darkZone.addEventListener('click', () => darkInput.click());
+  darkZone.addEventListener('keydown', (e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') darkInput.click(); });
+  darkZone.addEventListener('dragover', (e: DragEvent) => { e.preventDefault(); darkZone.classList.add('border-purple-400'); });
+  darkZone.addEventListener('dragleave', () => darkZone.classList.remove('border-purple-400'));
+  darkZone.addEventListener('drop', (e: DragEvent) => {
+    e.preventDefault();
+    darkZone.classList.remove('border-purple-400');
+    const file = e.dataTransfer?.files[0];
+    if (file) loadDarkFile(file);
+  });
+  darkInput.addEventListener('change', () => { if (darkInput.files?.[0]) loadDarkFile(darkInput.files[0]); });
+  darkClearBtn.addEventListener('click', (e: Event) => {
+    e.stopPropagation();
+    darkImg = null;
+    darkInput.value = '';
+    document.getElementById('icoDarkZoneText')!.textContent = 'Drop dark variant or click to browse';
+    document.getElementById('icoDarkPreview')!.classList.add('hidden');
+    darkClearBtn.classList.add('hidden');
+  });
+
+  function loadDarkFile(file: File) {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = () => {
+        darkImg = img;
+        document.getElementById('icoDarkZoneText')!.textContent = file.name;
+        const preview = document.getElementById('icoDarkPreview') as HTMLCanvasElement;
+        const ctx = preview.getContext('2d')!;
+        ctx.clearRect(0, 0, 24, 24);
+        ctx.drawImage(img, 0, 0, 24, 24);
+        preview.classList.remove('hidden');
+        darkClearBtn.classList.remove('hidden');
+      };
+      img.src = ev.target!.result as string;
+    };
+    reader.readAsDataURL(file);
   }
 
   /* ── Custom sizes ── */
@@ -244,18 +394,13 @@ const faq = [
       const pill = document.createElement('div');
       pill.className = 'flex items-center gap-1 rounded-full bg-purple-50 border border-purple-200 px-3 py-1 text-xs text-purple-700';
       pill.innerHTML = `${sz}px <button class="ml-1 text-purple-400 hover:text-purple-700" aria-label="Remove ${sz}px">×</button>`;
-      pill.querySelector('button')!.addEventListener('click', () => {
-        customIcoSizes.delete(sz);
-        renderCustomSizes();
-      });
+      pill.querySelector('button')!.addEventListener('click', () => { customIcoSizes.delete(sz); renderCustomSizes(); });
       list.appendChild(pill);
     });
   }
 
   document.getElementById('icoAddBtn')!.addEventListener('click', addCustomSize);
-  document.getElementById('icoCustomInput')!.addEventListener('keydown', (e: KeyboardEvent) => {
-    if (e.key === 'Enter') addCustomSize();
-  });
+  document.getElementById('icoCustomInput')!.addEventListener('keydown', (e: KeyboardEvent) => { if (e.key === 'Enter') addCustomSize(); });
 
   function addCustomSize() {
     const inp = document.getElementById('icoCustomInput') as HTMLInputElement;
@@ -266,74 +411,137 @@ const faq = [
     inp.value = '';
   }
 
+  /* ── Preset buttons ── */
+  document.getElementById('presetModern')!.addEventListener('click', () => {
+    document.querySelectorAll<HTMLInputElement>('.ico-cb input').forEach(cb => {
+      cb.checked = [16, 32, 48, 256].includes(parseInt(cb.value));
+    });
+    (document.getElementById('optApple') as HTMLInputElement).checked = true;
+    (document.getElementById('optPWA')   as HTMLInputElement).checked = true;
+    (document.getElementById('optSVG')   as HTMLInputElement).checked = true;
+  });
+
+  document.getElementById('presetAll')!.addEventListener('click', () => {
+    document.querySelectorAll<HTMLInputElement>('.ico-cb input').forEach(cb => { cb.checked = true; });
+  });
+
   /* ── Generate ── */
   document.getElementById('icoConvertBtn')!.addEventListener('click', async () => {
     if (!icoImg) return;
     const btn = document.getElementById('icoConvertBtn') as HTMLButtonElement;
     btn.disabled = true;
+
     try {
       const sizes: number[] = [];
-      document.querySelectorAll('.ico-cb input:checked').forEach(cb => sizes.push(parseInt((cb as HTMLInputElement).value)));
+      document.querySelectorAll<HTMLInputElement>('.ico-cb input:checked').forEach(cb => sizes.push(parseInt(cb.value)));
       customIcoSizes.forEach(sz => sizes.push(sz));
       const unique = [...new Set(sizes)].sort((a, b) => a - b);
       if (!unique.length) throw new Error('Select at least one size.');
 
-      setProgress(15);
+      const optApple = (document.getElementById('optApple') as HTMLInputElement).checked;
+      const optPWA   = (document.getElementById('optPWA')   as HTMLInputElement).checked;
+      const optSVG   = (document.getElementById('optSVG')   as HTMLInputElement).checked;
+
+      setProgress(10);
       showStatus('Rendering sizes…', 'info');
 
-      const blobs = await Promise.all(unique.map(sz => new Promise<Blob>((res, rej) => {
-        const c = document.createElement('canvas');
-        c.width = sz; c.height = sz;
-        const ctx = c.getContext('2d')!;
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-        ctx.drawImage(icoImg!, 0, 0, sz, sz);
-        c.toBlob(b => b ? res(b) : rej(new Error('Canvas encode failed')), 'image/png');
-      })));
+      const pngArrays = unique.map(sz => canvasToUint8(renderToCanvas(icoImg!, sz)));
 
-      const bufs = await Promise.all(blobs.map(b => b.arrayBuffer()));
-      setProgress(65);
+      setProgress(30);
+
+      const appleArr = optApple ? canvasToUint8(renderToCanvas(icoImg!, 180)) : null;
+      const pwa192   = optPWA   ? canvasToUint8(renderToCanvas(icoImg!, 192)) : null;
+      const pwa512   = optPWA   ? canvasToUint8(renderToCanvas(icoImg!, 512)) : null;
+
+      setProgress(45);
       showStatus('Packing .ico…', 'info');
 
       const n = unique.length, dirSz = 6 + n * 16;
       let tot = dirSz;
-      bufs.forEach(b => tot += b.byteLength);
+      pngArrays.forEach(a => tot += a.byteLength);
       const out = new ArrayBuffer(tot);
-      const dv = new DataView(out);
-      const u8 = new Uint8Array(out);
+      const dv  = new DataView(out);
+      const u8  = new Uint8Array(out);
 
       dv.setUint16(0, 0, true);
       dv.setUint16(2, 1, true);
       dv.setUint16(4, n, true);
 
       let off = dirSz;
-      bufs.forEach((buf, i) => {
+      pngArrays.forEach((arr, i) => {
         const sz = unique[i], e = 6 + i * 16;
         dv.setUint8(e,     sz >= 256 ? 0 : sz);
         dv.setUint8(e + 1, sz >= 256 ? 0 : sz);
         dv.setUint8(e + 2, 0); dv.setUint8(e + 3, 0);
         dv.setUint16(e + 4, 1,  true);
         dv.setUint16(e + 6, 32, true);
-        dv.setUint32(e + 8,  buf.byteLength, true);
+        dv.setUint32(e + 8,  arr.byteLength, true);
         dv.setUint32(e + 12, off, true);
-        u8.set(new Uint8Array(buf), off);
-        off += buf.byteLength;
+        u8.set(arr, off);
+        off += arr.byteLength;
       });
 
+      setProgress(60);
+      showStatus('Building ZIP…', 'info');
+
+      const zip = new JSZip();
+      zip.file('favicon.ico', out);
+      pngArrays.forEach((arr, i) => zip.file(`favicon-${unique[i]}x${unique[i]}.png`, arr));
+      if (appleArr) zip.file('apple-touch-icon.png', appleArr);
+      if (pwa192)   zip.file('favicon-192x192.png', pwa192);
+      if (pwa512)   zip.file('favicon-512x512.png', pwa512);
+      if (optPWA) {
+        zip.file('manifest.json', JSON.stringify({
+          icons: [
+            { src: '/favicon-192x192.png', type: 'image/png', sizes: '192x192' },
+            { src: '/favicon-512x512.png', type: 'image/png', sizes: '512x512' },
+          ],
+        }, null, 2));
+      }
+      if (optSVG) {
+        zip.file('favicon.svg', generateFaviconSVG(icoImg!, darkImg));
+      }
+
+      const snippet = generateHTMLSnippet({ svg: optSVG, apple: optApple, pwa: optPWA });
+      zip.file('head-snippet.html', snippet);
+
+      setProgress(80);
+
+      const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
       setProgress(95);
-      const blob = new Blob([out], { type: 'image/x-icon' });
-      const url = URL.createObjectURL(blob);
+      const url = URL.createObjectURL(zipBlob);
       const a = document.createElement('a');
-      a.href = url; a.download = 'favicon.ico';
+      a.href = url; a.download = 'favicon.zip';
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(url), 10_000);
       setProgress(100);
-      showStatus(`✓ favicon.ico — ${n} size(s): ${unique.join(', ')}px`, 'ok');
+
+      document.getElementById('htmlSnippetCode')!.textContent = snippet;
+      document.getElementById('htmlSnippetSection')!.classList.remove('hidden');
+
+      const parts: string[] = [`${n} PNG${n > 1 ? 's' : ''}`];
+      if (optApple) parts.push('apple-touch-icon');
+      if (optPWA)   parts.push('PWA + manifest');
+      if (optSVG)   parts.push(darkImg ? 'SVG (dark mode)' : 'SVG');
+      showStatus(`✓ favicon.zip — ${parts.join(' · ')}`, 'ok');
+
     } catch (e: any) {
       showStatus('✕ ' + e.message, 'err');
     }
+
     setTimeout(() => setProgress(0), 1500);
     btn.disabled = false;
+  });
+
+  /* ── Copy snippet ── */
+  document.getElementById('copySnippetBtn')!.addEventListener('click', () => {
+    const text = document.getElementById('htmlSnippetCode')!.textContent || '';
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copySnippetBtn')!;
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = orig; }, 2000);
+    });
   });
 
   /* ── Helpful button ── */

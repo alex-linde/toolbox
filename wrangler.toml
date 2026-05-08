@@ -12,3 +12,7 @@ class_name = "Counter"
 [[migrations]]
 tag                = "v1"
 new_sqlite_classes = ["Counter"]
+
+[[routes]]
+pattern = "lindetoolbox.com"
+custom_domain = true

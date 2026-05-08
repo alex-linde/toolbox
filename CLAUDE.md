@@ -98,6 +98,10 @@ This project uses **Tailwind CSS**. Follow the utility class patterns already us
 - **CORS proxies (Brand Assets).** Uses `api.allorigins.win` and `api.codetabs.com`.
 - **Font pairing requires the Worker.** `font-pairs.astro` calls `POST /fontpair` — this only works when deployed (or when a local tunnel is set up). It will 404 during `npm run preview`.
 
+## Git commits
+
+Do not add `Co-Authored-By` trailers to commit messages.
+
 ## Git workflow
 
 `main` is the production branch.

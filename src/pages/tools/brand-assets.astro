@@ -42,11 +42,11 @@ const faq = [
 
     <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
 
-      <div class="lg:col-span-8">
-        <div class="rounded-md border border-slate-200 bg-white/80 p-6 shadow-sm backdrop-blur-sm">
+      <div class="lg:col-span-8 flex flex-col gap-5">
 
-          <!-- URL Input -->
-          <div class="mb-4 flex gap-2">
+        <!-- URL Input -->
+        <div class="rounded-md border border-slate-200 bg-white/80 p-6 shadow-sm backdrop-blur-sm">
+          <div class="flex gap-2">
             <input id="brandUrl" type="url" placeholder="https://example.com"
               class="flex-1 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-purple-400 focus:outline-none" />
             <button id="brandFetchBtn"
@@ -54,63 +54,62 @@ const faq = [
               Extract Brand
             </button>
           </div>
+          <p id="brandStatus" class="hidden mt-3 text-sm"></p>
+        </div>
 
-          <p id="brandStatus" class="hidden mb-4 text-sm"></p>
+        <!-- Results -->
+        <div id="brandResults" class="hidden flex-col gap-5">
 
-          <!-- Results -->
-          <div id="brandResults" class="hidden flex-col gap-8">
+          <!-- Header -->
+          <div id="brandHeader" class="flex items-center gap-4 rounded-md border border-slate-200 bg-white p-4 shadow-sm"></div>
 
-            <!-- Header -->
-            <div id="brandHeader" class="flex items-center gap-4"></div>
+          <!-- Colours -->
+          <div class="rounded-md border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Colour Palette</p>
+            <div id="brandColors" class="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5"></div>
+          </div>
 
-            <!-- Colours -->
-            <div>
-              <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Colour Palette</p>
-              <div id="brandColors" class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"></div>
-            </div>
+          <!-- Colour combinations -->
+          <div class="rounded-md border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Colour Combinations</p>
+            <div id="brandCombos" class="grid grid-cols-2 gap-3 sm:grid-cols-3"></div>
+          </div>
 
-            <!-- Colour combinations -->
-            <div>
-              <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Colour Combinations</p>
-              <div id="brandCombos" class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4"></div>
-            </div>
+          <!-- Ionic palette -->
+          <div class="rounded-md border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Ionic Framework Palette</p>
+            <div id="brandIonic" class="flex flex-col gap-3"></div>
+          </div>
 
-            <!-- Ionic palette -->
-            <div>
-              <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Ionic Framework Palette</p>
-              <div id="brandIonic" class="flex flex-col gap-3"></div>
-            </div>
+          <!-- Fonts -->
+          <div class="rounded-md border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Typography</p>
+            <div id="brandFonts" class="flex flex-col gap-3"></div>
+          </div>
 
-            <!-- Fonts -->
-            <div>
-              <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Typography</p>
-              <div id="brandFonts" class="flex flex-col gap-3"></div>
-            </div>
+          <!-- Icons -->
+          <div class="rounded-md border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Icons &amp; Logos</p>
+            <div id="brandIcons" class="flex flex-wrap gap-3"></div>
+          </div>
 
-            <!-- Icons -->
-            <div>
-              <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Icons &amp; Logos</p>
-              <div id="brandIcons" class="flex flex-wrap gap-3"></div>
-            </div>
+          <!-- Meta -->
+          <div class="rounded-md border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Page Meta</p>
+            <table class="brand-meta-table w-full text-sm">
+              <tbody id="brandMetaTable"></tbody>
+            </table>
+          </div>
 
-            <!-- Meta -->
-            <div>
-              <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Page Meta</p>
-              <table class="brand-meta-table w-full text-sm">
-                <tbody id="brandMetaTable"></tbody>
-              </table>
-            </div>
-
-            <!-- Export -->
-            <div class="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
-              <button id="brandExportCSSBtn" class="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 transition-colors hover:border-purple-300 hover:text-purple-600">Export CSS Variables</button>
-              <button id="brandExportJSONBtn" class="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 transition-colors hover:border-purple-300 hover:text-purple-600">Export JSON</button>
-              <button id="brandExportMDBtn"  class="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 transition-colors hover:border-purple-300 hover:text-purple-600">Export Markdown</button>
-            </div>
-
+          <!-- Export -->
+          <div class="flex flex-wrap gap-2">
+            <button id="brandExportCSSBtn" class="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 transition-colors hover:border-purple-300 hover:text-purple-600">Export CSS Variables</button>
+            <button id="brandExportJSONBtn" class="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 transition-colors hover:border-purple-300 hover:text-purple-600">Export JSON</button>
+            <button id="brandExportMDBtn"  class="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 transition-colors hover:border-purple-300 hover:text-purple-600">Export Markdown</button>
           </div>
 
         </div>
+
       </div>
 
       <aside class="lg:col-span-4">
@@ -139,7 +138,7 @@ const faq = [
   </div>
 </MainLayout>
 
-<style>
+<style is:global>
   .brand-meta-table td { padding: 0.4rem 0.6rem; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
   .brand-meta-table td:first-child { font-size: 0.75rem; color: #94a3b8; white-space: nowrap; width: 8rem; }
   .brand-meta-table td:last-child { font-size: 0.8rem; color: #334155; word-break: break-word; }
@@ -461,7 +460,9 @@ const faq = [
     const btn = document.getElementById('brandFetchBtn') as HTMLButtonElement;
     btn.disabled = true;
     btn.textContent = 'Fetching…';
-    document.getElementById('brandResults')!.classList.add('hidden');
+    const r = document.getElementById('brandResults')!;
+    r.classList.add('hidden');
+    r.style.display = '';
     showStatus('Fetching page HTML…', 'info');
 
     const domain = new URL(url).hostname.replace(/^www\./,'');
@@ -633,7 +634,7 @@ const faq = [
     const resultsEl = document.getElementById('brandResults')!;
     resultsEl.classList.remove('hidden');
     resultsEl.style.display = 'flex';
-    resultsEl.scrollIntoView({ behavior:'smooth', block:'start' });
+    setTimeout(() => resultsEl.scrollIntoView({ behavior:'smooth', block:'start' }), 50);
   }
 
   function renderColourCombinations(pairs: any[]) {
