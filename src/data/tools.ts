@@ -49,6 +49,15 @@ export const tools: Tool[] = [
     icon: 'ICO',
   },
   {
+    slug: 'pdf-organiser',
+    title: 'PDF Organiser',
+    shortTitle: 'PDF Organiser',
+    description: 'Reorder and merge PDF pages in your browser. Drag thumbnails to rearrange, remove pages, and download a merged PDF.',
+    category: 'images',
+    tags: ['PDF', 'merge', 'reorder', 'combine', 'rearrange', 'pages'],
+    icon: 'PDF',
+  },
+  {
     slug: 'pdf-compress',
     title: 'PDF Compressor',
     shortTitle: 'PDF Compress',
