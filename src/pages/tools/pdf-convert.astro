@@ -483,23 +483,40 @@ const faq = [
     card.setAttribute('draggable', 'true');
     card.setAttribute('role', 'listitem');
     card.dataset.id = entry.id;
-    card.style.width = '108px';
+    card.style.width = '160px';
 
     const thumb = document.createElement('img');
     thumb.src = entry.objectUrl;
     thumb.className = 'block w-full rounded-sm object-contain';
-    thumb.style.height = '80px';
+    thumb.style.height = '120px';
     card.appendChild(thumb);
 
     const row = document.createElement('div');
-    row.className = 'mt-1.5 flex items-center justify-between gap-1 px-0.5';
+    row.className = 'mt-1.5 flex items-center gap-0.5 px-0.5';
 
     const label = document.createElement('span');
-    label.className = 'truncate text-xs text-slate-500';
-    label.textContent = baseName(entry.file.name).slice(0, 12);
+    label.className = 'min-w-0 flex-1 truncate text-xs text-slate-500';
+    label.textContent = baseName(entry.file.name).slice(0, 16);
+
+    function moveEntry(delta: -1 | 1) {
+      const idx = imgEntries.findIndex(e => e.id === entry.id);
+      const to  = idx + delta;
+      if (to < 0 || to >= imgEntries.length) return;
+      [imgEntries[idx], imgEntries[to]] = [imgEntries[to], imgEntries[idx]];
+      i2pRebuildCards();
+    }
+
+    function arrowBtn(symbol: string, title: string, delta: -1 | 1) {
+      const btn = document.createElement('button');
+      btn.className = 'flex-shrink-0 px-0.5 text-xs leading-none text-slate-300 transition-colors hover:text-purple-500';
+      btn.textContent = symbol;
+      btn.title = title;
+      btn.addEventListener('click', () => moveEntry(delta));
+      return btn;
+    }
 
     const removeBtn = document.createElement('button');
-    removeBtn.className = 'flex-shrink-0 text-xs leading-none text-slate-300 transition-colors hover:text-rose-500';
+    removeBtn.className = 'flex-shrink-0 px-0.5 text-xs leading-none text-slate-300 transition-colors hover:text-rose-500';
     removeBtn.textContent = '×';
     removeBtn.title = 'Remove';
     removeBtn.addEventListener('click', () => {
@@ -515,6 +532,8 @@ const faq = [
     });
 
     row.appendChild(label);
+    row.appendChild(arrowBtn('←', 'Move left', -1));
+    row.appendChild(arrowBtn('→', 'Move right', 1));
     row.appendChild(removeBtn);
     card.appendChild(row);
 
