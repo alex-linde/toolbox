@@ -2,7 +2,8 @@
 import MainLayout from '@/layouts/MainLayout.astro';
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import QuickTips from '@/components/QuickTips.astro';
-import FAQAccordion from '@/components/FAQAccordion.astro';
+import HelpfulButton from '@/components/HelpfulButton.astro';
+import ToolSEO from '@/components/ToolSEO.astro';
 
 const tips = [
   { heading: '50–100',   body: 'Very light tints — ideal for backgrounds and subtle surfaces.' },
@@ -31,12 +32,7 @@ const faq = [
         <h1 class="mt-3 text-2xl font-semibold tracking-tight text-slate-900">Colour Palette Generator</h1>
         <p class="mt-1 text-sm text-slate-500">Generate a 10-shade palette from any colour. Export CSS, Tailwind, or JSON.</p>
       </div>
-      <button id="helpfulBtn"
-        class="flex shrink-0 items-center gap-2 self-start rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-500 shadow-sm transition-all hover:border-purple-200 hover:text-purple-600"
-      >
-        <span>👍</span><span>This helped me</span>
-        <span id="helpfulCount" class="hidden font-semibold text-purple-600"></span>
-      </button>
+      <HelpfulButton />
     </div>
 
     <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
@@ -96,20 +92,14 @@ const faq = [
 
     </div>
 
-    <!-- SEO Sandwich -->
-    <div class="mt-16 rounded-md border border-slate-200 bg-slate-50 px-8 py-12">
-      <div class="mx-auto max-w-2xl">
-        <h2 class="mb-4 text-lg font-semibold text-slate-900">About Colour Palette Generator</h2>
-        <p class="mb-8 text-sm leading-relaxed text-slate-600">
-          Enter any hex colour and generate a 10-shade palette — 50 through 900 — following the same lightness steps as Tailwind CSS's colour system. Each shade shows its WCAG contrast ratio against white and black so you can immediately see which text colours are accessible. Export as CSS custom properties, a Tailwind config object, or JSON.
-        </p>
-        <FAQAccordion items={faq} />
-        <div class="mt-10 text-xs leading-relaxed text-slate-400">
-          <p>Related: <a href="/tools/wcag-contrast" class="text-purple-500 hover:underline">WCAG Contrast Checker</a> · <a href="/tools/tints-shades" class="text-purple-500 hover:underline">Tints &amp; Shades</a></p>
-          <p class="mt-2">Keywords: colour palette generator, Tailwind colour scale, 10-shade palette, CSS colour variables, brand colour palette</p>
-        </div>
-      </div>
-    </div>
+    <ToolSEO
+      heading="About Colour Palette Generator"
+      faq={faq}
+      related={`<a href="/tools/wcag-contrast" class="text-purple-500 hover:underline">WCAG Contrast Checker</a> · <a href="/tools/tints-shades" class="text-purple-500 hover:underline">Tints &amp; Shades</a>`}
+      keywords="colour palette generator, Tailwind colour scale, 10-shade palette, CSS colour variables, brand colour palette"
+    >
+      <p slot="description" class="mb-8 text-sm leading-relaxed text-slate-600">Enter any hex colour and generate a 10-shade palette — 50 through 900 — following the same lightness steps as Tailwind CSS's colour system. Each shade shows its WCAG contrast ratio against white and black so you can immediately see which text colours are accessible. Export as CSS custom properties, a Tailwind config object, or JSON.</p>
+    </ToolSEO>
 
   </div>
 </MainLayout>
@@ -267,13 +257,6 @@ const faq = [
       const obj: Record<string, string> = {};
       currentPalette.forEach(s => { obj[s.name] = s.hex.toUpperCase(); });
       navigator.clipboard.writeText(JSON.stringify(obj, null, 2)).then(() => flashBtn(this, '✓ Copied'));
-    });
-
-    document.getElementById('helpfulBtn')!.addEventListener('click', () => {
-      let n = parseInt(document.getElementById('helpfulCount')!.textContent || '0') + 1;
-      document.getElementById('helpfulBtn')!.classList.add('border-purple-300','bg-purple-50','text-purple-600');
-      const c = document.getElementById('helpfulCount')!;
-      c.textContent = String(n); c.classList.remove('hidden');
     });
 
     generate();

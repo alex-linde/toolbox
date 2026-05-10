@@ -2,7 +2,8 @@
 import MainLayout from '@/layouts/MainLayout.astro';
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import QuickTips from '@/components/QuickTips.astro';
-import FAQAccordion from '@/components/FAQAccordion.astro';
+import HelpfulButton from '@/components/HelpfulButton.astro';
+import ToolSEO from '@/components/ToolSEO.astro';
 
 const tips = [
   { heading: 'PDF → Images', body: 'Render every page as PNG or JPG. Multiple pages are bundled into a ZIP file.' },
@@ -33,12 +34,7 @@ const faq = [
         <h1 class="mt-3 text-2xl font-semibold tracking-tight text-slate-900">PDF Converter</h1>
         <p class="mt-1 text-sm text-slate-500">Convert PDFs to images, images to PDF, or extract text — all in your browser.</p>
       </div>
-      <button id="helpfulBtn"
-        class="flex shrink-0 items-center gap-2 self-start rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-500 shadow-sm transition-all hover:border-purple-200 hover:text-purple-600"
-      >
-        <span>👍</span><span>This helped me</span>
-        <span id="helpfulCount" class="hidden font-semibold text-purple-600"></span>
-      </button>
+      <HelpfulButton />
     </div>
 
     <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
@@ -198,23 +194,14 @@ const faq = [
 
     </div>
 
-    <!-- SEO Sandwich -->
-    <div class="mt-16 rounded-md border border-slate-200 bg-slate-50 px-8 py-12">
-      <div class="mx-auto max-w-2xl">
-        <h2 class="mb-4 text-lg font-semibold text-slate-900">About PDF Converter</h2>
-        <p class="mb-8 text-sm leading-relaxed text-slate-600">
-          A three-in-one PDF conversion tool that runs entirely in your browser. Export PDF pages as PNG or JPG images
-          (multi-page exports bundled into a ZIP), bundle PNG, JPG or WebP images into a new PDF with drag-to-reorder,
-          or extract the text layer of any digitally-created PDF into a copyable .txt file. No uploads, no account, no
-          server required — powered by PDF.js and pdf-lib.
-        </p>
-        <FAQAccordion items={faq} />
-        <div class="mt-10 text-xs leading-relaxed text-slate-400">
-          <p>Related: <a href="/tools/pdf-compress" class="text-purple-500 hover:underline">PDF Compressor</a> · <a href="/tools/pdf-organiser" class="text-purple-500 hover:underline">PDF Organiser</a> · <a href="/tools/image-convert" class="text-purple-500 hover:underline">Image Converter</a></p>
-          <p class="mt-2">Keywords: PDF to image, PDF to PNG, PDF to JPG, image to PDF, PDF text extractor, convert PDF browser, no upload PDF converter</p>
-        </div>
-      </div>
-    </div>
+    <ToolSEO
+      heading="About PDF Converter"
+      faq={faq}
+      related={`<a href="/tools/pdf-compress" class="text-purple-500 hover:underline">PDF Compressor</a> · <a href="/tools/pdf-organiser" class="text-purple-500 hover:underline">PDF Organiser</a> · <a href="/tools/image-convert" class="text-purple-500 hover:underline">Image Converter</a>`}
+      keywords="PDF to image, PDF to PNG, PDF to JPG, image to PDF, PDF text extractor, convert PDF browser, no upload PDF converter"
+    >
+      <p slot="description" class="mb-8 text-sm leading-relaxed text-slate-600">A three-in-one PDF conversion tool that runs entirely in your browser. Export PDF pages as PNG or JPG images (multi-page exports bundled into a ZIP), bundle PNG, JPG or WebP images into a new PDF with drag-to-reorder, or extract the text layer of any digitally-created PDF into a copyable .txt file. No uploads, no account, no server required — powered by PDF.js and pdf-lib.</p>
+    </ToolSEO>
 
   </div>
 </MainLayout>
@@ -693,11 +680,4 @@ const faq = [
     triggerDl(URL.createObjectURL(blob), p2tStem + '.txt');
   });
 
-  // ── Helpful button ─────────────────────────────────────────────
-  document.getElementById('helpfulBtn')!.addEventListener('click', () => {
-    const c = document.getElementById('helpfulCount')!;
-    c.textContent = String(parseInt(c.textContent || '0') + 1);
-    c.classList.remove('hidden');
-    document.getElementById('helpfulBtn')!.classList.add('border-purple-300', 'bg-purple-50', 'text-purple-600');
-  });
 </script>

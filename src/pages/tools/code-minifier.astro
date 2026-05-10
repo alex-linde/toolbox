@@ -2,7 +2,8 @@
 import MainLayout from '@/layouts/MainLayout.astro';
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import QuickTips from '@/components/QuickTips.astro';
-import FAQAccordion from '@/components/FAQAccordion.astro';
+import HelpfulButton from '@/components/HelpfulButton.astro';
+import ToolSEO from '@/components/ToolSEO.astro';
 
 const tips = [
   { heading: 'JS',   body: 'String-aware minifier — preserves string contents, template literals and licence comments (/*!).' },
@@ -31,12 +32,7 @@ const faq = [
         <h1 class="mt-3 text-2xl font-semibold tracking-tight text-slate-900">Code Minifier</h1>
         <p class="mt-1 text-sm text-slate-500">Strip whitespace and comments from JS, CSS and HTML — entirely in your browser.</p>
       </div>
-      <button id="helpfulBtn"
-        class="flex shrink-0 items-center gap-2 self-start rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-500 shadow-sm transition-all hover:border-purple-200 hover:text-purple-600"
-      >
-        <span>👍</span><span>This helped me</span>
-        <span id="helpfulCount" class="hidden font-semibold text-purple-600"></span>
-      </button>
+      <HelpfulButton />
     </div>
 
     <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
@@ -93,20 +89,14 @@ const faq = [
 
     </div>
 
-    <!-- SEO Sandwich -->
-    <div class="mt-16 rounded-md border border-slate-200 bg-slate-50 px-8 py-12">
-      <div class="mx-auto max-w-2xl">
-        <h2 class="mb-4 text-lg font-semibold text-slate-900">About Code Minifier</h2>
-        <p class="mb-8 text-sm leading-relaxed text-slate-600">
-          Minify JavaScript, CSS and HTML with pure in-browser implementations — no external libraries, no uploads. The JS minifier is string-aware (handles template literals, quoted strings and escape sequences) and preserves licence comments. The CSS minifier removes block comments and collapses whitespace around punctuation. The HTML minifier removes non-conditional HTML comments and whitespace between tags.
-        </p>
-        <FAQAccordion items={faq} />
-        <div class="mt-10 text-xs leading-relaxed text-slate-400">
-          <p>Related: <a href="/tools/code-formatter" class="text-purple-500 hover:underline">Code Formatter</a> · <a href="/tools/scss-compiler" class="text-purple-500 hover:underline">SCSS Compiler</a></p>
-          <p class="mt-2">Keywords: code minifier, minify JS CSS HTML, browser minifier, no upload minifier</p>
-        </div>
-      </div>
-    </div>
+    <ToolSEO
+      heading="About Code Minifier"
+      faq={faq}
+      related={`<a href="/tools/code-formatter" class="text-purple-500 hover:underline">Code Formatter</a> · <a href="/tools/scss-compiler" class="text-purple-500 hover:underline">SCSS Compiler</a>`}
+      keywords="code minifier, minify JS CSS HTML, browser minifier, no upload minifier"
+    >
+      <p slot="description" class="mb-8 text-sm leading-relaxed text-slate-600">Minify JavaScript, CSS and HTML with pure in-browser implementations — no external libraries, no uploads. The JS minifier is string-aware (handles template literals, quoted strings and escape sequences) and preserves licence comments. The CSS minifier removes block comments and collapses whitespace around punctuation. The HTML minifier removes non-conditional HTML comments and whitespace between tags.</p>
+    </ToolSEO>
 
   </div>
 </MainLayout>
@@ -250,10 +240,4 @@ const faq = [
     });
   });
 
-  document.getElementById('helpfulBtn')!.addEventListener('click', () => {
-    let n = parseInt(document.getElementById('helpfulCount')!.textContent || '0') + 1;
-    document.getElementById('helpfulBtn')!.classList.add('border-purple-300','bg-purple-50','text-purple-600');
-    const c = document.getElementById('helpfulCount')!;
-    c.textContent = String(n); c.classList.remove('hidden');
-  });
 </script>

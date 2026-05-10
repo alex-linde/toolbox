@@ -2,7 +2,8 @@
 import MainLayout from '@/layouts/MainLayout.astro';
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import QuickTips from '@/components/QuickTips.astro';
-import FAQAccordion from '@/components/FAQAccordion.astro';
+import HelpfulButton from '@/components/HelpfulButton.astro';
+import ToolSEO from '@/components/ToolSEO.astro';
 
 const tips = [
   { heading: 'Median cut',      body: 'Colors are found with the median cut algorithm — it recursively splits the widest color range, giving perceptually balanced palettes.' },
@@ -32,10 +33,7 @@ const faq = [
         <h1 class="mt-3 text-2xl font-semibold tracking-tight text-slate-900">Image Dominant Color Extractor</h1>
         <p class="mt-1 text-sm text-slate-500">Extract dominant colors from any image — copy as HEX, RGB, HSL, CSS vars, or JSON.</p>
       </div>
-      <button id="helpfulBtn" class="flex shrink-0 items-center gap-2 self-start rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-500 shadow-sm transition-all hover:border-purple-200 hover:text-purple-600">
-        <span>👍</span><span>This helped me</span>
-        <span id="helpfulCount" class="hidden font-semibold text-purple-600"></span>
-      </button>
+      <HelpfulButton />
     </div>
 
     <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
@@ -55,7 +53,7 @@ const faq = [
           </div>
 
           <!-- Results -->
-          <div id="results" class="hidden flex-col gap-5">
+          <div id="results" class="hidden gap-5">
 
             <!-- Preview + count control -->
             <div class="flex flex-wrap items-start gap-5">
@@ -110,20 +108,14 @@ const faq = [
 
     </div>
 
-    <!-- SEO Sandwich -->
-    <div class="mt-16 rounded-md border border-slate-200 bg-slate-50 px-8 py-12">
-      <div class="mx-auto max-w-2xl">
-        <h2 class="mb-4 text-lg font-semibold text-slate-900">About Image Dominant Color Extractor</h2>
-        <p class="mb-8 text-sm leading-relaxed text-slate-600">
-          Drop any image and instantly see its dominant color palette — extracted using the median cut algorithm. Copy individual swatches or export the entire palette as CSS custom properties, a JSON array, or a Tailwind-compatible config object. Transparent pixels are automatically excluded, making it ideal for logos and product shots with transparent backgrounds. All processing runs in-browser via the Canvas API — no uploads, no server, no account required.
-        </p>
-        <FAQAccordion items={faq} />
-        <div class="mt-10 text-xs leading-relaxed text-slate-400">
-          <p>Related: <a href="/tools/color-palette" class="text-purple-500 hover:underline">Color Palette Generator</a> · <a href="/tools/wcag-contrast" class="text-purple-500 hover:underline">WCAG Contrast Checker</a> · <a href="/tools/tints-shades" class="text-purple-500 hover:underline">Tints & Shades Generator</a></p>
-          <p class="mt-2">Keywords: dominant color extractor, image color picker, extract colors from image, color palette from photo, median cut algorithm, css custom properties, design tokens, tailwind color config</p>
-        </div>
-      </div>
-    </div>
+    <ToolSEO
+      heading="About Image Dominant Color Extractor"
+      faq={faq}
+      related={`<a href="/tools/color-palette" class="text-purple-500 hover:underline">Color Palette Generator</a> · <a href="/tools/wcag-contrast" class="text-purple-500 hover:underline">WCAG Contrast Checker</a> · <a href="/tools/tints-shades" class="text-purple-500 hover:underline">Tints &amp; Shades Generator</a>`}
+      keywords="dominant color extractor, image color picker, extract colors from image, color palette from photo, median cut algorithm, css custom properties, design tokens, tailwind color config"
+    >
+      <p slot="description" class="mb-8 text-sm leading-relaxed text-slate-600">Drop any image and instantly see its dominant color palette — extracted using the median cut algorithm. Copy individual swatches or export the entire palette as CSS custom properties, a JSON array, or a Tailwind-compatible config object. Transparent pixels are automatically excluded, making it ideal for logos and product shots with transparent backgrounds. All processing runs in-browser via the Canvas API — no uploads, no server, no account required.</p>
+    </ToolSEO>
 
   </div>
 </MainLayout>
@@ -132,11 +124,10 @@ const faq = [
   type RGB = [number, number, number];
 
   let currentImg: HTMLImageElement | null = null;
+  let currentPixels: RGB[] = [];
   let currentColors: RGB[] = [];
   let currentCount = 6;
   let currentFmt: 'HEX' | 'RGB' | 'HSL' = 'HEX';
-  let helpfulCount = 0;
-
   /* ── Color conversions ── */
   function rgbToHex([r, g, b]: RGB): string {
     return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
@@ -175,8 +166,9 @@ const faq = [
     const h = Math.max(1, Math.round(img.naturalHeight * scale));
     const c = document.createElement('canvas');
     c.width = w; c.height = h;
-    c.getContext('2d')!.drawImage(img, 0, 0, w, h);
-    const data = c.getContext('2d')!.getImageData(0, 0, w, h).data;
+    const ctx = c.getContext('2d')!;
+    ctx.drawImage(img, 0, 0, w, h);
+    const data = ctx.getImageData(0, 0, w, h).data;
     const pixels: RGB[] = [];
     for (let i = 0; i < data.length; i += 4) {
       if (data[i + 3] < 128) continue;
@@ -302,7 +294,7 @@ const faq = [
 
   function extract() {
     if (!currentImg) return;
-    currentColors = quantize(getPixels(currentImg), currentCount);
+    currentColors = quantize(currentPixels, currentCount);
     renderPalette();
   }
 
@@ -328,11 +320,12 @@ const faq = [
       const img = new Image();
       img.onload = () => {
         currentImg = img;
+        currentPixels = getPixels(img);
         (document.getElementById('imgPreview') as HTMLImageElement).src = ev.target!.result as string;
         document.getElementById('imgInfo')!.textContent = `${img.naturalWidth}×${img.naturalHeight}px · ${file.name}`;
         const results = document.getElementById('results')!;
         results.classList.remove('hidden');
-        results.style.display = 'flex';
+        results.classList.add('flex', 'flex-col');
         extract();
       };
       img.src = ev.target!.result as string;
@@ -392,12 +385,4 @@ const faq = [
     navigator.clipboard.writeText(vals).then(() => flashBtn('copyAllBtn', 'Copied!'));
   });
 
-  /* ── Helpful button ── */
-  document.getElementById('helpfulBtn')!.addEventListener('click', () => {
-    helpfulCount++;
-    document.getElementById('helpfulBtn')!.classList.add('border-purple-300', 'bg-purple-50', 'text-purple-600');
-    const el = document.getElementById('helpfulCount')!;
-    el.textContent = String(helpfulCount);
-    el.classList.remove('hidden');
-  });
 </script>

@@ -1,0 +1,25 @@
+---
+import FAQAccordion from '@/components/FAQAccordion.astro';
+
+interface Props {
+  heading: string;
+  faq: { question: string; answer: string }[];
+  /** Inner HTML for the "Related:" paragraph (anchor tags). Omit if no related tools. */
+  related?: string;
+  keywords: string;
+}
+
+const { heading, faq, related, keywords } = Astro.props;
+---
+
+<div class="mt-16 rounded-md border border-slate-200 bg-slate-50 px-8 py-12">
+  <div class="mx-auto max-w-2xl">
+    <h2 class="mb-4 text-lg font-semibold text-slate-900">{heading}</h2>
+    <slot name="description" />
+    <FAQAccordion items={faq} />
+    <div class="mt-10 text-xs leading-relaxed text-slate-400">
+      {related && <p set:html={`Related: ${related}`} />}
+      <p class={related ? 'mt-2' : ''}>Keywords: {keywords}</p>
+    </div>
+  </div>
+</div>

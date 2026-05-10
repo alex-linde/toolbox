@@ -17,6 +17,8 @@ Live at **[lindetoolbox.com](https://lindetoolbox.com)**
 | Image Converter | Convert between PNG, JPEG, WebP, AVIF, SVG, HEIC and BMP |
 | ICO Favicon Generator | Generate a multi-size `.ico` favicon from any image format |
 | PDF Compressor | Compress PDFs across four quality levels with live estimated size |
+| PDF Converter | Convert PDFs to PNG or JPG images, bundle images into a PDF, or extract text |
+| PDF Organiser | Reorder and merge PDF pages — drag thumbnails, remove pages, download result |
 | File Diff | Compare any two text, code or PDF files with inline diff highlighting |
 
 ### Typography & Color
@@ -30,6 +32,8 @@ Live at **[lindetoolbox.com](https://lindetoolbox.com)**
 | Color Palette Generator | Generate harmonious palettes from a base color using HSL color theory |
 | CSS Gradient Builder | Build linear and radial CSS gradients with a visual editor |
 | Tints & Shades Generator | Generate tints and shades with CSS variable and design token export |
+| Color Namer | Paste any HEX, RGB or HSL value and find its closest named color via CIE Lab ΔE |
+| Color Extractor | Extract dominant colors from any image and export as CSS variables, JSON or Tailwind |
 
 ### Code & Web
 
@@ -52,6 +56,15 @@ Live at **[lindetoolbox.com](https://lindetoolbox.com)**
 - **[Cloudflare Workers + Assets](https://workers.cloudflare.com)** — hosting and edge functions
 - All tool logic runs client-side via vanilla TypeScript `<script>` blocks
 
+## OSS credits
+
+| Library | Used for |
+|---|---|
+| [opentype.js](https://github.com/opentypejs/opentype.js) | Font Format Converter, Font Inspector |
+| [JSZip](https://stuk.github.io/jszip/) | XD → Figma Packager, PDF Converter (multi-page ZIP export) |
+| [pdf-lib](https://pdf-lib.js.org/) | PDF Compressor, PDF Organiser, PDF Converter |
+| [PDF.js](https://mozilla.github.io/pdf.js/) | PDF Organiser, PDF Converter (page rendering) — loaded from CDN |
+
 ---
 
 ## Development
@@ -67,7 +80,7 @@ npm run deploy    # build + deploy to Cloudflare
 The Cloudflare Worker (`worker/counter.js`) handles two endpoints:
 
 - `POST /fontpair` — AI font pairing suggestions (requires `ANTHROPIC_KEY` secret)
-- `GET /POST /u?k=<key>` — usage counters via Durable Objects
+- `GET/POST /u?k=<key>` — usage counters via Durable Objects
 
 ---
 
@@ -85,8 +98,10 @@ src/
   components/
     Breadcrumbs.astro
     FAQAccordion.astro
+    HelpfulButton.astro   — "This helped me" feedback button
     QuickTips.astro
     ToolCard.astro
+    ToolSEO.astro         — SEO/FAQ/related section used at the bottom of tool pages
   data/
     tools.ts              — Master tool registry
     nav.ts                — Navigation structure

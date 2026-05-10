@@ -2,7 +2,8 @@
 import MainLayout from '@/layouts/MainLayout.astro';
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import QuickTips from '@/components/QuickTips.astro';
-import FAQAccordion from '@/components/FAQAccordion.astro';
+import HelpfulButton from '@/components/HelpfulButton.astro';
+import ToolSEO from '@/components/ToolSEO.astro';
 
 const tips = [
   { heading: 'AVIF',  body: 'Best compression of any format — ~50% smaller than JPEG at equal quality. Chrome, Firefox, Safari 16+ support it.' },
@@ -39,12 +40,7 @@ const faq = [
         <h1 class="mt-3 text-2xl font-semibold tracking-tight text-slate-900">Image Converter</h1>
         <p class="mt-1 text-sm text-slate-500">Convert between PNG, JPEG, WebP, AVIF, BMP and ICO.</p>
       </div>
-      <button id="helpfulBtn"
-        class="flex shrink-0 items-center gap-2 self-start rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-500 shadow-sm transition-all hover:border-purple-200 hover:text-purple-600"
-      >
-        <span>👍</span><span>This helped me</span>
-        <span id="helpfulCount" class="hidden font-semibold text-purple-600"></span>
-      </button>
+      <HelpfulButton />
     </div>
 
     <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
@@ -147,20 +143,14 @@ const faq = [
 
     </div>
 
-    <!-- SEO Sandwich -->
-    <div class="mt-16 rounded-md border border-slate-200 bg-slate-50 px-8 py-12">
-      <div class="mx-auto max-w-2xl">
-        <h2 class="mb-4 text-lg font-semibold text-slate-900">About Image Converter</h2>
-        <p class="mb-8 text-sm leading-relaxed text-slate-600">
-          Convert images between all major formats directly in your browser. HEIC files from iPhone are decoded via heic2any. BMP output uses a pure-JS 24-bit uncompressed encoder. ICO output creates a single-size icon with a PNG payload inside the ICO container. AVIF encoding requires Chrome 94+ or Firefox 93+.
-        </p>
-        <FAQAccordion items={faq} />
-        <div class="mt-10 text-xs leading-relaxed text-slate-400">
-          <p>Related: <a href="/tools/image-compress" class="text-purple-500 hover:underline">Image Compressor</a> · <a href="/tools/image-resize" class="text-purple-500 hover:underline">Image Resizer</a> · <a href="/tools/ico-generator" class="text-purple-500 hover:underline">ICO Generator</a></p>
-          <p class="mt-2">Keywords: image converter, convert png to webp, heic to jpg, avif converter, bmp encoder, no upload image convert</p>
-        </div>
-      </div>
-    </div>
+    <ToolSEO
+      heading="About Image Converter"
+      faq={faq}
+      related={`<a href="/tools/image-compress" class="text-purple-500 hover:underline">Image Compressor</a> · <a href="/tools/image-resize" class="text-purple-500 hover:underline">Image Resizer</a> · <a href="/tools/ico-generator" class="text-purple-500 hover:underline">ICO Generator</a>`}
+      keywords="image converter, convert png to webp, heic to jpg, avif converter, bmp encoder, no upload image convert"
+    >
+      <p slot="description" class="mb-8 text-sm leading-relaxed text-slate-600">Convert images between all major formats directly in your browser. HEIC files from iPhone are decoded via heic2any. BMP output uses a pure-JS 24-bit uncompressed encoder. ICO output creates a single-size icon with a PNG payload inside the ICO container. AVIF encoding requires Chrome 94+ or Firefox 93+.</p>
+    </ToolSEO>
 
   </div>
 </MainLayout>
@@ -170,7 +160,6 @@ const faq = [
   let imgcvtFile: File | null = null;
   let imgcvtBitmap: ImageBitmap | null = null;
   let imgcvtOrigW = 0, imgcvtOrigH = 0;
-  let helpfulCount = 0;
 
   /* ── Helpers ── */
   function fmtBytes(b: number): string {
@@ -459,12 +448,4 @@ const faq = [
     btn.disabled = false;
   });
 
-  /* ── Helpful ── */
-  document.getElementById('helpfulBtn')!.addEventListener('click', () => {
-    helpfulCount++;
-    document.getElementById('helpfulBtn')!.classList.add('border-purple-300', 'bg-purple-50', 'text-purple-600');
-    const countEl = document.getElementById('helpfulCount')!;
-    countEl.textContent = String(helpfulCount);
-    countEl.classList.remove('hidden');
-  });
 </script>

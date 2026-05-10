@@ -2,7 +2,8 @@
 import MainLayout from '@/layouts/MainLayout.astro';
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import QuickTips from '@/components/QuickTips.astro';
-import FAQAccordion from '@/components/FAQAccordion.astro';
+import HelpfulButton from '@/components/HelpfulButton.astro';
+import ToolSEO from '@/components/ToolSEO.astro';
 
 const tips = [
   { heading: '16 × 16',   body: 'Browser tab and small list views.' },
@@ -41,12 +42,7 @@ const faq = [
         <h1 class="mt-3 text-2xl font-semibold tracking-tight text-slate-900">ICO Favicon Generator</h1>
         <p class="mt-1 text-sm text-slate-500">Generate a complete favicon package — ICO, SVG, Apple touch, PWA icons + HTML snippet.</p>
       </div>
-      <button id="helpfulBtn"
-        class="flex shrink-0 items-center gap-2 self-start rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-500 shadow-sm transition-all hover:border-purple-200 hover:text-purple-600"
-      >
-        <span>👍</span><span>This helped me</span>
-        <span id="helpfulCount" class="hidden font-semibold text-purple-600"></span>
-      </button>
+      <HelpfulButton />
     </div>
 
     <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
@@ -186,20 +182,14 @@ const faq = [
 
     </div>
 
-    <!-- SEO Sandwich -->
-    <div class="mt-16 rounded-md border border-slate-200 bg-slate-50 px-8 py-12">
-      <div class="mx-auto max-w-2xl">
-        <h2 class="mb-4 text-lg font-semibold text-slate-900">About ICO Favicon Generator</h2>
-        <p class="mb-8 text-sm leading-relaxed text-slate-600">
-          Generate a complete favicon package in one click. The ZIP includes a <code class="font-mono text-xs">favicon.ico</code> (multi-size PNG payloads — works in all browsers and Windows 7+), a scalable <code class="font-mono text-xs">favicon.svg</code> with optional dark/light CSS media query, an <code class="font-mono text-xs">apple-touch-icon.png</code> (180×180 for iOS), PWA icons (192×192 + 512×512) with <code class="font-mono text-xs">manifest.json</code>, and a <code class="font-mono text-xs">head-snippet.html</code> with ready-to-paste <code class="font-mono text-xs">&lt;link&gt;</code> tags. Everything runs in your browser — no uploads.
-        </p>
-        <FAQAccordion items={faq} />
-        <div class="mt-10 text-xs leading-relaxed text-slate-400">
-          <p>Related: <a href="/tools/image-compress" class="text-purple-500 hover:underline">Image Compressor</a> · <a href="/tools/image-convert" class="text-purple-500 hover:underline">Image Converter</a> · <a href="/tools/image-resize" class="text-purple-500 hover:underline">Image Resizer</a></p>
-          <p class="mt-2">Keywords: ico generator, favicon creator, multi-size ico, favicon zip download, apple touch icon, pwa icons, manifest.json, dark mode favicon, svg favicon, no upload favicon</p>
-        </div>
-      </div>
-    </div>
+    <ToolSEO
+      heading="About ICO Favicon Generator"
+      faq={faq}
+      related={`<a href="/tools/image-compress" class="text-purple-500 hover:underline">Image Compressor</a> · <a href="/tools/image-convert" class="text-purple-500 hover:underline">Image Converter</a> · <a href="/tools/image-resize" class="text-purple-500 hover:underline">Image Resizer</a>`}
+      keywords="ico generator, favicon creator, multi-size ico, favicon zip download, apple touch icon, pwa icons, manifest.json, dark mode favicon, svg favicon, no upload favicon"
+    >
+      <p slot="description" class="mb-8 text-sm leading-relaxed text-slate-600" set:html={`Generate a complete favicon package in one click. The ZIP includes a <code class="font-mono text-xs">favicon.ico</code> (multi-size PNG payloads — works in all browsers and Windows 7+), a scalable <code class="font-mono text-xs">favicon.svg</code> with optional dark/light CSS media query, an <code class="font-mono text-xs">apple-touch-icon.png</code> (180×180 for iOS), PWA icons (192×192 + 512×512) with <code class="font-mono text-xs">manifest.json</code>, and a <code class="font-mono text-xs">head-snippet.html</code> with ready-to-paste <code class="font-mono text-xs">&lt;link&gt;</code> tags. Everything runs in your browser — no uploads.`} />
+    </ToolSEO>
 
   </div>
 </MainLayout>
@@ -211,7 +201,6 @@ const faq = [
   let icoImg: HTMLImageElement | null = null;
   let darkImg: HTMLImageElement | null = null;
   const customIcoSizes = new Set<number>();
-  let helpfulCount = 0;
 
   /* ── Helpers ── */
   function fmtBytes(b: number): string {
@@ -544,13 +533,4 @@ const faq = [
     });
   });
 
-  /* ── Helpful button ── */
-  document.getElementById('helpfulBtn')!.addEventListener('click', () => {
-    helpfulCount++;
-    const btn = document.getElementById('helpfulBtn')!;
-    btn.classList.add('border-purple-300', 'bg-purple-50', 'text-purple-600');
-    const countEl = document.getElementById('helpfulCount')!;
-    countEl.textContent = String(helpfulCount);
-    countEl.classList.remove('hidden');
-  });
 </script>

@@ -1,0 +1,23 @@
+<button
+  id="helpfulBtn"
+  class="flex shrink-0 items-center gap-2 self-start rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-500 shadow-sm transition-all hover:border-purple-200 hover:text-purple-600"
+>
+  <span>👍</span><span>This helped me</span>
+  <span id="helpfulCount" class="hidden font-semibold text-purple-600"></span>
+</button>
+
+<script>
+  function setupHelpfulBtn() {
+    const btn = document.getElementById('helpfulBtn') as HTMLButtonElement | null;
+    const count = document.getElementById('helpfulCount');
+    if (!btn || !count || btn.dataset.initialized) return;
+    btn.dataset.initialized = 'true';
+    btn.addEventListener('click', () => {
+      const n = parseInt(count.textContent || '0') + 1;
+      btn.classList.add('border-purple-300', 'bg-purple-50', 'text-purple-600');
+      count.textContent = String(n);
+      count.classList.remove('hidden');
+    });
+  }
+  document.addEventListener('astro:page-load', setupHelpfulBtn);
+</script>

@@ -60,6 +60,10 @@ export function contrastRatio(hex1: string, hex2: string): number {
   return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
 }
 
+export function isLight(r: number, g: number, b: number): boolean {
+  return 0.299 * r + 0.587 * g + 0.114 * b > 140;
+}
+
 export function isValidHex(h: string): boolean {
   return /^#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/.test(h);
 }

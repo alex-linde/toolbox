@@ -2,7 +2,8 @@
 import MainLayout from '@/layouts/MainLayout.astro';
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import QuickTips from '@/components/QuickTips.astro';
-import FAQAccordion from '@/components/FAQAccordion.astro';
+import HelpfulButton from '@/components/HelpfulButton.astro';
+import ToolSEO from '@/components/ToolSEO.astro';
 
 const tips = [
   { heading: 'Load multiple PDFs', body: 'Drop several PDFs at once — all their pages appear as draggable thumbnails in one view.' },
@@ -33,12 +34,7 @@ const faq = [
         <h1 class="mt-3 text-2xl font-semibold tracking-tight text-slate-900">PDF Organiser</h1>
         <p class="mt-1 text-sm text-slate-500">Reorder, remove, and merge PDF pages — all in your browser.</p>
       </div>
-      <button id="helpfulBtn"
-        class="flex shrink-0 items-center gap-2 self-start rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-500 shadow-sm transition-all hover:border-purple-200 hover:text-purple-600"
-      >
-        <span>👍</span><span>This helped me</span>
-        <span id="helpfulCount" class="hidden font-semibold text-purple-600"></span>
-      </button>
+      <HelpfulButton />
     </div>
 
     <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
@@ -105,22 +101,14 @@ const faq = [
 
     </div>
 
-    <!-- SEO Sandwich -->
-    <div class="mt-16 rounded-md border border-slate-200 bg-slate-50 px-8 py-12">
-      <div class="mx-auto max-w-2xl">
-        <h2 class="mb-4 text-lg font-semibold text-slate-900">About PDF Organiser</h2>
-        <p class="mb-8 text-sm leading-relaxed text-slate-600">
-          Rearrange, merge, and trim PDF documents entirely in your browser. Load one or more PDF files and their
-          pages appear as visual thumbnails. Drag any thumbnail to reorder it; click × to remove a page entirely.
-          When your order is set, hit Merge &amp; Download to save a new PDF — no server, no uploads, no account needed.
-        </p>
-        <FAQAccordion items={faq} />
-        <div class="mt-10 text-xs leading-relaxed text-slate-400">
-          <p>Related: <a href="/tools/pdf-compress" class="text-purple-500 hover:underline">PDF Compressor</a> · <a href="/tools/file-diff" class="text-purple-500 hover:underline">File Diff</a></p>
-          <p class="mt-2">Keywords: merge PDF, reorder PDF pages, combine PDF browser, rearrange PDF, delete PDF pages, PDF editor no upload</p>
-        </div>
-      </div>
-    </div>
+    <ToolSEO
+      heading="About PDF Organiser"
+      faq={faq}
+      related={`<a href="/tools/pdf-compress" class="text-purple-500 hover:underline">PDF Compressor</a> · <a href="/tools/file-diff" class="text-purple-500 hover:underline">File Diff</a>`}
+      keywords="merge PDF, reorder PDF pages, combine PDF browser, rearrange PDF, delete PDF pages, PDF editor no upload"
+    >
+      <p slot="description" class="mb-8 text-sm leading-relaxed text-slate-600">Rearrange, merge, and trim PDF documents entirely in your browser. Load one or more PDF files and their pages appear as visual thumbnails. Drag any thumbnail to reorder it; click × to remove a page entirely. When your order is set, hit Merge &amp; Download to save a new PDF — no server, no uploads, no account needed.</p>
+    </ToolSEO>
 
   </div>
 </MainLayout>
@@ -399,16 +387,6 @@ const faq = [
       showStatus('✕ ' + e.message, 'err');
     }
     mergeBtn.disabled = false;
-  });
-
-  // ── Helpful button ─────────────────────────────────────────────────────────
-
-  document.getElementById('helpfulBtn')!.addEventListener('click', () => {
-    const countEl = document.getElementById('helpfulCount')!;
-    const n = parseInt(countEl.textContent || '0') + 1;
-    document.getElementById('helpfulBtn')!.classList.add('border-purple-300', 'bg-purple-50', 'text-purple-600');
-    countEl.textContent = String(n);
-    countEl.classList.remove('hidden');
   });
 
   // ── Helpers ────────────────────────────────────────────────────────────────
