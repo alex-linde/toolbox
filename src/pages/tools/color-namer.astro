@@ -281,7 +281,6 @@ const faq = [
     currentRgb = rgb;
     const hex = rgbToHex(rgb);
     const light = isLight(rgb);
-    const textCls = light ? 'text-slate-900' : 'text-white';
     const mutedCls = light ? 'text-slate-600' : 'text-white/70';
 
     const matches = findNearest(rgb, 5);
@@ -294,14 +293,14 @@ const faq = [
     hexEl.textContent = hex;
     hexEl.className = `font-mono text-sm font-semibold ${mutedCls}`;
 
-    // Name + delta
+    // Name + delta (always on white panel — fixed colors)
     const nameEl = document.getElementById('resultName')!;
     nameEl.textContent = top.name;
-    nameEl.className = `text-lg font-semibold ${textCls}`;
+    nameEl.className = 'text-lg font-semibold text-slate-900';
 
     const deltaEl = document.getElementById('resultDelta')!;
     deltaEl.textContent = `ΔE ${top.de.toFixed(1)} — ${deLabel(top.de)}`;
-    deltaEl.className = `text-xs ${mutedCls}`;
+    deltaEl.className = 'text-xs text-slate-400';
 
     // Alternatives
     const altRow = document.getElementById('altRow')!;

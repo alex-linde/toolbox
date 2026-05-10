@@ -51,7 +51,7 @@ worker/
 | `pdf-compress` | PDF Compressor |
 | `file-diff` | File Diff |
 | `font-converter` | Font Format Converter (opentype.js) |
-| `font-inspector` | Font Inspector (opentype.js) |
+| `font-inspector` | Font Inspector — placeholder (Mixfont Lens removed; opentype.js reimplementation pending) |
 | `font-pairs` | Font Pairs (AI — calls `/fontpair` worker endpoint) |
 | `wcag-contrast` | WCAG Contrast Checker |
 | `color-palette` | Color Palette Generator |
